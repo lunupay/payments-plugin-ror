@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="/"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/mn.css?hash=e56f0d7a820bc5ba" />
+    <title>Payment widget</title>
+  </head>
+  <body>
+    <section class="pv30 pv15@m">
+      <div class="mhA w1310@d3 w1200@d2 w992@d w ph15">
+        <div class="cfx mh-2 bgF9F9F9 (lt|ph2|w1/2|w@m3)>1">
+          <div class="ov">
+            <img
+              class="w"
+              src="/images/0006.jpg"
+            />
+          </div>
+          <div>
+            <div class="ph2">
+              <div class="h p30">
+                <div class="layoutRow fhaB fvaS">
+                  <div
+                    class="f26 fwBold"
+                  >Twill trousers Slim Fit</div>
+                </div>
+                <div class="f20 fw5 mt15">3.00€</div>
+                <div class="pv30 f14 lh170% bs b bb1 bcDFE5E9">
+                  Straight-cut coat in woven fabric with a high collar and buttons down the front.
+                  Diagonal, welt side pockets, two inner pockets,
+                  decorative buttons at the cuffs and a single back vent. Lined.
+                </div>
+                <div class="mt30">
+                  <a
+                    class="layoutRow fhaC fvaC tc ttU olN h50 w bg232323
+                      dn bg0:not[.loading]:h cF f16 fw6 (o50|crNA).loading"
+                    onclick="paymentCreate({order_id: 'my-order-id'}, this)"
+                  >Proceed to pay</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<script src="https://plugins.lunu.io/packages/widget-ui/omega.js"></script>
+
+<script>
+var paymentCreate = (function() {
+  var loading = false;
+  return function (params, self) {
+    if (loading) return;
+    loading = true;
+    self = self || {};
+    var className = self.className || '';
+    var innerText = self.innerText || '';
+    self.innerText = 'loading...';
+    self.className = className + ' loading';
+
+
+    // This code creates a payment and immediately opens a payment widget
+    var paymentAPI = new window.Lunu.API({
+      endpoint: '/lunu_pay/create', // Your API endpoint
+    });
+    paymentAPI.create({
+      /*
+        All of this user data is sent to the your endpoint script where you should handle it.
+        In our example, only the order_id" field is handled.
+      */
+      order_id: params.order_id,
+      authenticity_token: '<%= form_authenticity_token %>',
+    }, {
+      version: 'alpha',
+    })
+        .finally(function() {
+          loading = false;
+          self.innerText = innerText;
+          self.className = className;
+        })
+        .then(function(v) {
+          console.log(v);
+        });
+  }
+})();
+</script>
+  </body>
+</html>
